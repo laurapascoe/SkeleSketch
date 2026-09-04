@@ -32,7 +32,7 @@ WORKFLOW
 		> Invert LUT.
 		d. Increase Contrast: To improve detection of dim processes, select 
 		Image > Adjust > Brightness/Contrast and change as needed.  
-  	2. Draw a rectangle around each cell and press Space to capture.
+  	2. Draw around each cell with the polygon tool and press Space to capture.
   	3. Press Shift when done — files are saved automatically.
   	4. Each cell gets its own subfolder, e.g. BaseName-1/BaseName-1.tif
   	5. A scale bar is burned into each saved crop and the labeled overview.
