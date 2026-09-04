@@ -169,6 +169,21 @@ SOMA_ERODE_PASSES       = 0;
 // Reduce to 1 or 0 if nearby process roots start disappearing.
 SOMA_DILATE_PASSES      = 2;
 
+// Morphology for the MEASURED / SAVED soma ONLY — decoupled from the erode/dilate
+// above, which stays dedicated to building the subtraction mask the skeleton needs.
+// SOMA_ERODE_PASSES / SOMA_DILATE_PASSES still pad that scratch mask (+2 by default)
+// so the bright soma-edge halo is swallowed before skeletonizing; these two instead
+// control the soma that is measured (Soma_Area/Circularity/AR/Solidity), saved as
+// Soma-Mask.tif, and handed to the brush-editing stage as its starting candidate.
+// Kept at 0/0 so the measured soma stays tight to the thresholded bright core
+// instead of inheriting the +2 dilate. Raise SOMA_MEASURE_ERODE_PASSES to 1 to go
+// tighter still; raise SOMA_MEASURE_DILATE_PASSES if you deliberately want the
+// measured soma padded. Only Edit_Finalize.ijm reads these — nothing to pass to
+// Skeletonize_And_Detect_Soma.ijm. NOTE: a tighter mask can drop below
+// SOMA_MIN_AREA (15) on small somas — lower it to ~8–10 if small somas vanish.
+SOMA_MEASURE_ERODE_PASSES  = 0;
+SOMA_MEASURE_DILATE_PASSES = 0;
+
 // Minimum soma area (px²).
 SOMA_MIN_AREA           = 15;
 
@@ -201,6 +216,41 @@ PROCESS_BLUR_SIGMA      = 0;
 // without fattening real processes (despeckle only removes fully isolated pixels).
 // Set to 0 to skip.
 PROCESS_DESPECKLE_PASSES = 1;
+
+// Morphological CLOSE passes (dilate then erode) applied to the process mask
+// before skeletonizing. Bridges sub-threshold gaps so a process that dims out
+// mid-branch reconnects into ONE piece instead of skeletonizing into fragments,
+// and reconnects dim distal tips back to the main arbor. Each pass bridges a gap
+// of roughly 2 px; the matching erode restores process thickness afterward, so
+// this changes connectivity, not width.
+//   0 = off (original behaviour).
+//   1 = recommended. Raise to 2 only if branches still break at obvious gaps —
+//       higher risks fusing two processes that run close together, or shifting
+//       junctions. This is the knob that fixes "doesn't pick up complete branches".
+PROCESS_CLOSE_PASSES = 1;
+
+// Remove disconnected mask blobs smaller than this many px² BEFORE skeletonizing.
+// Because the close above runs first, real processes are joined to the arbor and
+// survive as one big component; what remains below this floor is isolated
+// background speckle that would otherwise skeletonize into its own component and
+// inflate Num_Branches / Num_Junctions / Num_Endpoints (the final stats sum across
+// ALL components). This is what lets you safely LOWER PROCESS_FIXED_THRESHOLD to
+// grab dim processes — the low threshold's background pickup is cleaned up here.
+//   0 = off (keep every blob, original behaviour).
+//   20 = recommended gentle default: kills speckle, keeps genuine fragments.
+//   Raise toward 40–60 if background still leaks; lower if real short fragments
+//   are disappearing. For an even stricter clean, see KEEP_LARGEST_COMPONENT below.
+PROCESS_MIN_PARTICLE_SIZE = 20;
+
+// Stricter alternative to the size floor: after cleaning, keep ONLY the single
+// largest connected component (the main arbor) and discard everything else,
+// regardless of size. Guarantees zero background pickup, but will drop any
+// genuinely detached distal fragment whose gap the close didn't bridge — use the
+// Stage-1 skeleton brush to hand-add those back. Leave false unless background is
+// still a problem after tuning PROCESS_MIN_PARTICLE_SIZE.
+//   false = size-floor cleaning only (recommended).
+//   true  = keep largest component only (strictest).
+KEEP_LARGEST_COMPONENT = false;
 
 // --- Spur pruning ---
 // Terminal spurs (free endpoint -> nearest junction) shorter than this are
@@ -441,6 +491,9 @@ function runSkeletonizeAndPreparePreview() {
     print(f, "PROCESS_FIXED_THRESHOLD="  + PROCESS_FIXED_THRESHOLD);
     print(f, "PROCESS_BLUR_SIGMA="       + PROCESS_BLUR_SIGMA);
     print(f, "PROCESS_DESPECKLE_PASSES=" + PROCESS_DESPECKLE_PASSES);
+    print(f, "PROCESS_CLOSE_PASSES="     + PROCESS_CLOSE_PASSES);
+    print(f, "PROCESS_MIN_PARTICLE_SIZE=" + PROCESS_MIN_PARTICLE_SIZE);
+    print(f, "KEEP_LARGEST_COMPONENT="   + KEEP_LARGEST_COMPONENT);
     File.close(f);
 
     run("Skeletonize And Detect Soma");
@@ -940,8 +993,11 @@ while (editing) {
         setOption("BlackBackground", true);
         run("Convert to Mask");
         run("Fill Holes");
-        for (e = 0; e < SOMA_ERODE_PASSES;  e++) { run("Erode");  }
-        for (d = 0; d < SOMA_DILATE_PASSES; d++) { run("Dilate"); }
+        // Measured/saved soma uses its OWN morphology (default 0/0) so it stays
+        // tight to the thresholded core, independent of the +2 dilate that the
+        // skeleton's subtraction mask still gets in Skeletonize_And_Detect_Soma.ijm.
+        for (e = 0; e < SOMA_MEASURE_ERODE_PASSES;  e++) { run("Erode");  }
+        for (d = 0; d < SOMA_MEASURE_DILATE_PASSES; d++) { run("Dilate"); }
 
         // ── Reduce the raw threshold mask to a single automatic candidate ─────
         // (largest qualifying blob) -- this is only the starting point for the
