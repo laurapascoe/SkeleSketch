@@ -2,7 +2,7 @@
 
 **An Open-Source Tool for Quantifying Microglial Morphology in Fiji/ImageJ**
 
-SkeleSketch is a semi-automated pipeline for reconstructing individual microglia and extracting morphometric features (e.g., soma size, branch length, branching complexity) from standard 2D epifluorescence images. It combines automated skeletonization and soma segmentation with an optional, quick manual correction step, so you can fix the occasional bad skeleton or soma mask per cell instead of re-tuning parameters across a whole dataset. It runs entirely within Fiji, needs only standard computing resources, and exports results to Excel for downstream analysis.
+SkeleSketch is a semi-automated pipeline for reconstructing individual microglia and extracting morphometric features (e.g., soma size, branch length, branching complexity) from standard 2D epifluorescence images. It combines automated skeletonization and soma segmentation with an optional, quick manual correction step. It runs entirely within Fiji, needs only standard computing resources, and exports results to Excel for downstream analysis.
 
 It is built for labs that want reproducible, single-cell morphometrics without confocal imaging, proprietary software, or coding.
 
