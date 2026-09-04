@@ -2,11 +2,11 @@
 
 **An Open-Source Tool for Quantifying Microglial Morphology in Fiji/ImageJ**
 
-SkeleSketch is a semi-automated pipeline for reconstructing individual microglia and extracting morphometric features (e.g., soma size and shape, branch length, branching complexity) from ordinary 2D epifluorescence micrographs. It combines automated skeletonization and soma segmentation with an optional, quick manual-correction step, so you can fix the occasional bad skeleton or soma mask per cell instead of re-tuning parameters across a whole dataset. It runs entirely within Fiji, needs only standard computing resources, and exports results to Excel for downstream analysis.
+SkeleSketch is a semi-automated pipeline for reconstructing individual microglia and extracting morphometric features (e.g., soma size, branch length, branching complexity) from standard 2D epifluorescence images. It combines automated skeletonization and soma segmentation with an optional, quick manual correction step, so you can fix the occasional bad skeleton or soma mask per cell instead of re-tuning parameters across a whole dataset. It runs entirely within Fiji, needs only standard computing resources, and exports results to Excel for downstream analysis.
 
 It is built for labs that want reproducible, single-cell morphometrics without confocal imaging, proprietary software, or coding.
 
-## How it works
+## How It Works
 
 The workflow is two keystrokes:
 
@@ -24,7 +24,7 @@ Tested on Windows and macOS with Fiji (ImageJ 1.54p).
 
 ## Documentation
 
-The bundled **README** macro (`Plugins > SkeleSketch > README`) is the full reference: it documents the complete workflow, every tunable parameter and where to set it, the output folder structure and file-naming rules, channel selection, intensity handling, troubleshooting, and the metrics captured. Start there for anything beyond the quick start above.
+The bundled **README** macro (`Plugins > SkeleSketch > README`) documents the complete workflow, every tunable parameter and where to set it, the output folder structure and file-naming rules, channel selection, intensity handling, troubleshooting, and the metrics captured. Start there for anything beyond the quick start above.
 
 ## Citing SkeleSketch
 
