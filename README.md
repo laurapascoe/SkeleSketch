@@ -26,14 +26,6 @@ Tested on Windows and macOS with Fiji (ImageJ 1.54p).
 
 The bundled **README** macro (`Plugins > SkeleSketch > README`) documents the complete workflow, every tunable parameter and where to set it, the output folder structure and file-naming rules, channel selection, intensity handling, troubleshooting, and the metrics captured. Start there for anything beyond the quick start above.
 
-## Citing SkeleSketch
-
-If you use SkeleSketch in your work, please cite:
-
-> Pascoe, L.A.\*, Masegosa, V.M.\*, Liu, S., Zhu, Q. SkeleSketch: An Open-Source Tool for Quantifying Microglial Morphology in Fiji/ImageJ. 
-
-The accompanying paper describes the pipeline in detail and validates it against two labeling strategies (CX3CR1-GFP and Iba1) and the commercial platform Imaris, using an LPS-induced neuroinflammation model.
-
 ## License
 
 See the `LICENSE` file in this repository.
