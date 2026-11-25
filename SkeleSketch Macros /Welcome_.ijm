@@ -5,7 +5,7 @@
 
 SETUP
 -----
-1. Place the unzipped 'SkeleSketch' folder here:
+1. Place the unzipped 'SkeleSketch Macros' folder here:
       Fiji.app > scripts > Plugins
 
 2. Install dependencies via:
@@ -18,8 +18,8 @@ SETUP
 
 3. Restart Fiji (close and reopen).
 
-4. Run this README file once to install keyboard shortcuts:
-      Plugins > SkeleSketch > README
+4. Run this Welcome file once to install keyboard shortcuts:
+      Plugins > SkeleSketch Macros > Welcome
 
 WORKFLOW
 --------
@@ -544,7 +544,7 @@ showMessage("SkeleSketch",
     "<hr style='border:none; border-top:1px solid #ddd; margin:14px 0 10px 0;'/>" +
 
     "<p style='font-size:10px; color:#999; text-align:center; margin:0;'>" +
-        "Full documentation is in this README file" +
+        "Full documentation is in this Welcome file" +
     "</p>" +
 
     "</body></html>");
