@@ -64,6 +64,9 @@ PARAMETER REFERENCE — WHERE TO TUNE EACH SETTING
           look consistent — see SCALE BAR ON SAVED IMAGES below.
 
   Edit_Finalize.ijm (F2) — Tunable Parameters section:
+	  DETECT_SOMA                    — soma detection on/off (true =
+                                        default; false = branches-only,
+                                        see BRANCHES-ONLY MODE below)
       MICROGLIA_CHANNEL              — which channel is the microglia stain
                                         (see CHANNEL SELECTION below)
       SOURCE_INTENSITY_MAX           — 16→8-bit scaling mode
@@ -301,6 +304,26 @@ SOMA OUTPUT IMAGES
       SOMA_ABS_MIN_INTENSITY — lower if soma is too dim to be detected
   For the occasional cell that just needs a one-off correction, use the
   soma editing stage above instead of changing parameters for everything.
+
+BRANCHES-ONLY MODE (DETECT_SOMA)
+--------------------------------
+  For images where automatic soma detection is unreliable, set
+  DETECT_SOMA = false at the top of Edit_Finalize.ijm and restart Fiji.
+
+  With DETECT_SOMA = false:
+    - No soma is detected or removed; the skeleton runs through the
+      cell body.
+    - The soma-editing stage is skipped (Shift on the skeleton stage
+      goes straight to measurement).
+    - No Soma-Mask / Soma-Overlay images are saved.
+    - Soma_Area, Soma_Circularity, Soma_AR, Soma_Solidity,
+      Ramification_Index, Branch_Density and Complexity_Index are
+      recorded as NaN, since they require a soma.
+    - All branch metrics are reported as usual.
+
+  Raw counts (branches, junctions, endpoints) differ slightly from
+  soma mode because process roots join inside the cell body instead of
+  ending at the soma edge. Use one mode per batch
 
 TROUBLESHOOTING — Soma Not Detected
 -------------------------------------
