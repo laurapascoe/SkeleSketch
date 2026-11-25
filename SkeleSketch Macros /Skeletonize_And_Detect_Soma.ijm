@@ -30,6 +30,7 @@ if (!File.exists(cfgPath)) {
     exit("SkeleSoma_params.txt not found in temp directory.\n" +
          "Run this macro via F2 in Edit_Finalize.ijm, not directly.");
 }
+DETECT_SOMA = true;   // default if an older config file doesn't include it
 cfgLines = split(File.openAsString(cfgPath), "\n");
 for (ci = 0; ci < cfgLines.length; ci++) {
     line = cfgLines[ci];
@@ -38,7 +39,8 @@ for (ci = 0; ci < cfgLines.length; ci++) {
     if (eqIdx < 1) { continue; }
     cfgKey = substring(line, 0, eqIdx);
     cfgVal = substring(line, eqIdx + 1);
-    if      (cfgKey == "MICROGLIA_CHANNEL")         { MICROGLIA_CHANNEL         = parseInt(cfgVal);   }
+    if      (cfgKey == "DETECT_SOMA")               { DETECT_SOMA = (cfgVal == "1" || toLowerCase(cfgVal) == "true"); }
+    else if (cfgKey == "MICROGLIA_CHANNEL")         { MICROGLIA_CHANNEL         = parseInt(cfgVal);   }
     else if (cfgKey == "SOURCE_INTENSITY_MAX")       { SOURCE_INTENSITY_MAX      = parseFloat(cfgVal); }
     else if (cfgKey == "SOMA_TOP_PERCENT")           { SOMA_TOP_PERCENT          = parseInt(cfgVal);   }
     else if (cfgKey == "SOMA_ABS_MIN_INTENSITY")     { SOMA_ABS_MIN_INTENSITY    = parseInt(cfgVal);   }
@@ -260,6 +262,14 @@ if (isOpen(somasMaskName)) {
 selectWindow("soma_mask");
 for (e = 0; e < SOMA_ERODE_PASSES;  e++) { run("Erode");  }
 for (d = 0; d < SOMA_DILATE_PASSES; d++) { run("Dilate"); }
+
+// Branches-only mode (DETECT_SOMA = false in Edit_Finalize.ijm): empty the
+// soma mask so nothing is subtracted before skeletonizing.
+if (!DETECT_SOMA) {
+    selectWindow("soma_mask");
+    run("Multiply...", "value=0");
+    print("DETECT_SOMA = false: soma mask cleared; skeleton includes the cell body.");
+}
 
 close("Results");
 
