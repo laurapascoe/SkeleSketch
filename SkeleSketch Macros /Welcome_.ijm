@@ -35,7 +35,9 @@ WORKFLOW
   	2. Draw around each cell with the polygon tool and press Space to capture.
   	3. Press Shift when done — files are saved automatically.
   	4. Each cell gets its own subfolder, e.g. BaseName-1/BaseName-1.tif
-  	5. A scale bar is burned into each saved crop and the labeled overview.
+  	5. A scale bar is added as an overlay to each saved crop (optional, see
+  	   SCALEBAR_ON_CROPS in Capture_Images) and to the labeled overview. The overlay does not
+  	   change pixel values or affect any measurement.
 
   F2  →  Edit & Finalize
  	1. Open a captured cell image, then press F2.
@@ -56,7 +58,7 @@ PARAMETER REFERENCE — WHERE TO TUNE EACH SETTING
   open it, edit the variable, save, and restart Fiji (see NOTES).
 
   Capture_Images.ijm (F1) — Tunable Parameters section:
-      SCALEBAR_WIDTH_UM, SCALEBAR_HEIGHT, SCALEBAR_FONT,
+      SCALEBAR_ON_CROPS, SCALEBAR_WIDTH_UM, SCALEBAR_HEIGHT, SCALEBAR_FONT,
       SCALEBAR_COLOR, SCALEBAR_LOCATION
           Scale bar drawn on saved crops + the labeled overview.
           Keep these in sync with the matching set below in
