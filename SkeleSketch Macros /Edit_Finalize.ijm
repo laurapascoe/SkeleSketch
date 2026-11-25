@@ -140,6 +140,20 @@ MICROGLIA_CHANNEL = 1;
 //                                  study.
 SOURCE_INTENSITY_MAX = 0;
 
+// --- Soma detection on/off ---
+// true  = normal mode: detect the soma, subtract it before skeletonizing,
+//         run the soma-editing stage, and report soma metrics.
+// false = branches-only mode: no soma detection, no soma subtraction, no
+//         soma-editing stage, no soma images saved. Branch metrics are
+//         reported as usual; soma metrics and soma-normalized metrics
+//         (Ramification_Index, Branch_Density, Complexity_Index) are written
+//         as NaN (blank), since they can't be computed without a soma.
+//         Use for images where automatic soma detection is unreliable
+//         (e.g. label-free brightfield). NOTE: with no soma removed, the
+//         skeleton runs through the cell body, so branch counts are not
+//         directly comparable to soma-mode results. Don't mix modes in one batch.
+DETECT_SOMA = true;
+
 // --- Soma detection ---
 // Soma is detected by thresholding only the TOP brightest pixels.
 // SOMA_TOP_PERCENT = what fraction of the brightest pixels to keep (0–100).
@@ -476,6 +490,7 @@ function runSkeletonizeAndPreparePreview() {
     // only one copy of every default — here in Edit_Finalize.ijm.
     cfgPath = getDirectory("temp") + "SkeleSoma_params.txt";
     f = File.open(cfgPath);
+    print(f, "DETECT_SOMA="               + DETECT_SOMA);
     print(f, "MICROGLIA_CHANNEL="         + MICROGLIA_CHANNEL);
     print(f, "SOURCE_INTENSITY_MAX="      + SOURCE_INTENSITY_MAX);
     print(f, "SOMA_TOP_PERCENT="          + SOMA_TOP_PERCENT);
@@ -969,6 +984,9 @@ while (editing) {
         }
 
         // ── Soma re-measurement ────────────────────────────────────────────────
+        // Everything from here to close("soma_final") is skipped when
+        // DETECT_SOMA = false (branches-only mode); see the else branch below.
+        if (DETECT_SOMA) {
         duplicateMicrogliaChannel(officialName, "soma_final");
 
         run("Gaussian Blur...", "sigma=" + SOMA_BLUR_RADIUS);
@@ -1136,6 +1154,14 @@ while (editing) {
             print("Soma (finalize): empty soma accepted — area recorded as 0.");
         }
         close("soma_final");
+        } else {
+            // Branches-only mode: no soma stage, no soma images.
+            somaArea_raw  = NaN;
+            somaCirc_raw  = NaN;
+            somaAR_raw    = NaN;
+            somaSolid_raw = NaN;
+            print("DETECT_SOMA = false: soma stage skipped; soma metrics recorded as NaN.");
+        }
 
         // Measure already returns calibrated area when the image is
         // calibrated (column header says µm²), or raw pixel area when it
@@ -1377,6 +1403,14 @@ while (editing) {
         if (somaArea_um2 > 0) {
             complexityIndex = (numEndpoints * totalBranchLen_um) / somaArea_um2;
         } else { complexityIndex = 0; }
+
+        // Branches-only mode: these three divide by soma area, so they're
+        // undefined rather than 0. NaN keeps them out of averages in Excel/R.
+        if (!DETECT_SOMA) {
+            ramificationIndex = NaN;
+            branchDensity     = NaN;
+            complexityIndex   = NaN;
+        }
 
         // ── Console log ───────────────────────────────────────────────────────
         print("----------------------------------------");
