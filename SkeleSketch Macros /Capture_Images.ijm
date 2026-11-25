@@ -48,6 +48,11 @@ SCALEBAR_FONT      = 14;   // label font size
 SCALEBAR_COLOR     = "White";
 SCALEBAR_LOCATION  = "Lower Right";
 
+// Draw the scale bar on individual cell crops. On by default: Users may find that on small
+// cells the bar can dominate the image. The overlay never affects
+// measurements either way. 
+SCALEBAR_ON_CROPS = true;
+
 // Background value written OUTSIDE the traced outline by Clear Outside.
 // Clear Outside fills with the background COLOR as displayed, so 0,0,0 (black)
 // matches the dark background the rest of the pipeline treats as non-signal.
@@ -158,7 +163,7 @@ while (true) {
                 run("Select None");
             }
 
-            addScaleBar();
+           if (SCALEBAR_ON_CROPS) { addScaleBar(); }
 
             // ── Each cell gets its own subfolder, e.g. <folder>/<n>-1/ ──────────
             // F2 (Edit_Finalize.ijm) later saves that cell's skeleton/soma/composite
